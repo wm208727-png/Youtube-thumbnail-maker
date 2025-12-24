@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>YouTube Thumbnail Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#7c3aed,#06b6d4,#22c55e);
+  min-height:100vh;
+  color:#fff;
+}
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:30px;
+  text-align:center;
+}
+h1{
+  font-size:36px;
+  margin-bottom:10px;
+}
+p{
+  opacity:0.9;
+}
+.generator{
+  background:rgba(0,0,0,0.35);
+  border-radius:20px;
+  padding:25px;
+  margin-top:30px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+input{
+  width:80%;
+  max-width:500px;
+  padding:14px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  outline:none;
+}
+button{
+  margin-top:15px;
+  padding:12px 25px;
+  font-size:16px;
+  font-weight:bold;
+  border:none;
+  border-radius:25px;
+  cursor:pointer;
+  background:linear-gradient(90deg,#facc15,#fb7185,#38bdf8);
+}
+canvas{
+  margin-top:25px;
+  border-radius:15px;
+  max-width:100%;
+  box-shadow:0 0 25px rgba(255,255,255,0.5);
+}
+
+/* Footer */
+.site-footer{
+  margin-top:50px;
+  background:#020617;
+  padding:20px;
+  text-align:center;
+}
+.site-footer button{
+  margin:5px;
+  padding:8px 15px;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+}
+.site-footer p{
+  font-size:14px;
+  opacity:0.7;
+}
+
+/* Modal */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+}
+.modal-content{
+  background:#fff;
+  color:#000;
+  max-width:600px;
+  margin:10% auto;
+  padding:25px;
+  border-radius:15px;
+  text-align:left;
+}
+.close{
+  float:right;
+  font-size:20px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>🎨 YouTube Thumbnail Generator</h1>
+  <p>AI-powered colourful thumbnail creator for YouTube videos</p>
+
+  <div class="generator">
+    <input type="text" id="titleInput" placeholder="Enter your YouTube video title">
+    <br>
+    <button onclick="generateThumbnail()">Generate Thumbnail</button>
+
+    <canvas id="thumb" width="1280" height="720"></canvas>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <button onclick="openModal('privacy')">Privacy Policy</button>
+  <button onclick="openModal('terms')">Terms & Conditions</button>
+  <p>© 2025 YouTube Thumbnail Generator</p>
+</footer>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">✖</span>
+    <div id="modalText"></div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById("thumb");
+const ctx = canvas.getContext("2d");
+
+function generateThumbnail(){
+  const title = document.getElementById("titleInput").value || "YOUR VIDEO TITLE";
+
+  // Background gradient
+  const grad = ctx.createLinearGradient(0,0,1280,720);
+  grad.addColorStop(0,randomColor());
+  grad.addColorStop(1,randomColor());
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,1280,720);
+
+  // Glow box
+  ctx.fillStyle="rgba(0,0,0,0.45)";
+  ctx.fillRect(80,220,1120,280);
+
+  // Text
+  ctx.fillStyle="#fff";
+  ctx.textAlign="center";
+  ctx.font="bold 80px Arial";
+  wrapText(title,640,340,1000,90);
+
+  // AI label
+  ctx.font="bold 40px Arial";
+  ctx.fillStyle="#facc15";
+  ctx.fillText("AI GENERATED",640,600);
+}
+
+function wrapText(text,x,y,maxWidth,lineHeight){
+  const words=text.split(" ");
+  let line="";
+  for(let n=0;n<words.length;n++){
+    const testLine=line+words[n]+" ";
+    const metrics=ctx.measureText(testLine);
+    if(metrics.width>maxWidth && n>0){
+      ctx.fillText(line,x,y);
+      line=words[n]+" ";
+      y+=lineHeight;
+    }else{
+      line=testLine;
+    }
+  }
+  ctx.fillText(line,x,y);
+}
+
+function randomColor(){
+  return `hsl(${Math.random()*360},90%,55%)`;
+}
+
+// Privacy & Terms
+function openModal(type){
+  const text=document.getElementById("modalText");
+  if(type==="privacy"){
+    text.innerHTML="<h2>Privacy Policy</h2><p>We do not collect personal data. All thumbnail generation happens inside your browser.</p>";
+  }else{
+    text.innerHTML="<h2>Terms & Conditions</h2><p>This tool is for educational and creative use only. Generated thumbnails are not guaranteed for monetization approval.</p>";
+  }
+  document.getElementById("modal").style.display="block";
+}
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+</script>
+
+</body>
+</html>
